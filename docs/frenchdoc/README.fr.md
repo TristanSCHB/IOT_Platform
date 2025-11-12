@@ -51,45 +51,159 @@ Le projet s’appuie sur plusieurs briques logicielles interconnectées :
 | **Raspberry Pi** | **Mosquitto Client** | Publie et Lit les messages MQTT sur des topics tels que `sensors/#`. |
 | **VM Linux** | **Mosquitto** | Broker MQTT qui permet de l'envoie et la reception des données mqtt entre les différent client. |
 | **VM Linux** | **MongoDB** | Base de données utilisée pour stocker les mesures et les journaux reçus du broker MQTT. |
-| **Lien Nucleo ↔️ RPi** | **Bluetooth (RFCOMM)** | Canal de communication entre la carte Nucleo et la Raspberry Pi. |
-| **Dispositif embarqué** | **Nucleo (STM32)** | Collecte les données des capteurs (température, humidité, etc.) et les envoie via Bluetooth. |
 | Web | SendGrid | Utilisé pour envoyer des notifications par e-mail automatisées en fonction des données ou d’alertes spécifiques. |
 
 
 
-# Vu Systeme Globale
+# 🌍 Vu Systeme Globale
 
-# Utilisation du repo
 
-## L'Objets connecté
 
-Vous pouvez importer le projet directement sur STM32CubeIDE ...
+# 💾 Utilisation du repo
 
-## Passrelle
+## 🔩 L'Objets connecté
 
-Ici nous utiliserons Node-red 
+Vous pouvez prendre le projet STM32 du repo et modifier selon vos envie les différents fichiers utiles afin de le flasher sur le microcontrolleur de la NUCLEO.
 
-Vous n'aurez qu'à importer les flows avec ...
+Schéma de l'organsiation des fichiers dans le projet STM32 : 
+![MQTT](/docs/images/stm32projectArchitecture.png)
 
-## Serveur
+Actuellement le projet permet :
 
-### mongodb
+- L'envoie de la température sur la charactértisique : 001c0000000111e1ac360002a5d5c51b
+- L'envoie de l'humidité sur la charactéristique : 001c0000000111e1ac360002a5d5c51b
+- L'envoie de l'accélération sur la charactéristique : 00E00000000111e1ac360002a5d5c51b
+- L'envoie de l'accélération gyroscopique sur la charactéristique : 00E00000000111e1ac360002a5d5c51b
+
+## 🌉 Passerelle
+
+Installer node-red :
+
+Installer les packets : 
+
+Importer le fichier flows.js sur node red.
+
+Configurer les différents noeud :
+
+## 🖥️ Serveur
+
+### 🧩 Installation mosquitto
+
 > [!NOTE]
 > Pour mieux comprendre la communication mqtt et la configuration mosquitto référer vous au document associé.. [Lisez-le ici.](./docs/frenchdoc/mqtt.fr.md)
-installer mongoDB
-commandes
 
-### mosquitto
+```bash
+sudo apt update
+sudo apt install -y mosquitto mosquitto-clients
+```
+
+Activer Mosquitto et demarrer le :
+
+```bash
+sudo systemctl enable mosquitto
+sudo systemctl start mosquitto
+```
+
+Ouvrir le fichier de oonfiguration
+
+```bash
+sudo nano /etc/mosquitto/conf.d/default.conf
+```
+Ajouter aux premières lignes :
+
+```
+listener 1883
+allow_anonymous true // il faut parfois ajouter cette ligne
+listener 8000
+protocol websockets
+allow_anonymous true // il faut parfois ajouter cette ligne
+```
+
+Restart the service 
+
+```bash
+sudo systemctl restart mosquitto
+```
+
+
+### 🍃 MongoDB
 
 > [!NOTE]
-> Pour mieux comprendre la communication mqtt et la configuration mosquitto référer vous au document associé.. [Lisez-le ici.](./docs/frenchdoc/mqtt.fr.md)
+> Pour mieux comprendre le rôle et comment utiliser la base de donnée référez vous au document associé. [Lisez-le ici.](/docs/frenchdoc/mongodb.fr.md)
 
-intaller mosquitto
-commandes
+### 🔹 Téléchargement
+
+Rendez-vous sur le site officiel pour télécharger une version compatible :
+👉 [MongoDB Community Edition Archive](https://www.mongodb.com/try/download/community-edition/releases/archive)
+
+Téléchargez le paquet correspondant à votre distribution :
+
+- .deb pour Debian/Ubuntu
+
+- .rpm pour RedHat/CentOS
+
+### 🔹 Installation
+🐧 Sur Debian/Ubuntu :
+```bash
+sudo apt install [nom-du-fichier].deb
+```
+🐧 Sur RedHat/CentOS :
+```bash
+sudo dnf install [nom-du-fichier].rpm
+```
+### 🔹 Lancement du service
+
+Démarrer MongoDB via systemctl :
+```bash
+sudo systemctl start mongod
+```
+
+Lancer automatiquement au démarrage :
+```bash
+sudo systemctl enable mongod
+```
+
+## ⚙️ Configuration du réseau
+
+Le fichier de configuration se trouve ici :
+
+```bash
+sudo nano /etc/mongod.conf
+```
+Modifiez la ligne :
+
+bindIp: 127.0.0.1
+
+➡️ pour la remplacer par l’adresse IP de votre VM (obtenue via ifconfig).
+
+Redémarrez MongoDB pour appliquer les changements :
+
+```bash
+sudo systemctl restart mongod
+```
+
+## 🧰 Création de la base de données et des collections
+
+Ouvrez le shell MongoDB :
+```bash
+mongo --host [IP_VM] --port 27017
+```
+
+Créer une base de données :
+```bash
+use IOT
+```
+
+Créer une ou des collection :
+
+```bash
+db.createCollection("Temp")
+db.createCollection("Hum")
+db.createCollection("Alarme")
+```
 
 ### Page web
 
-Package à installer
-Fonctions clées ...
+Vous disposez dans le repo d'une page web exemple qui m'a servie pour ce projet. Vous devrez télécharger aussi les fichiers js utilisés par la page web.
 
 

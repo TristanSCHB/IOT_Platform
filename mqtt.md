@@ -27,6 +27,8 @@ There is no direct connection between publisher and subscriber:
 
 Example: Node-RED client → TCP 1883 → Mosquitto Broker
 
+![MQTT](docs/images/onlyMqttConnection.png)
+
 ### 🌐 Port 8000 → MQTT via WebSocket
 
 - Protocol: **WebSocket (HTTP)**
@@ -34,6 +36,7 @@ Example: Node-RED client → TCP 1883 → Mosquitto Broker
 - Requires enabling `websockets` in the Mosquitto configuration
 
 Example: Web page (JS) → WebSocket 8000 → Mosquitto Broker
+![MQTT](docs/images/mqttAnsWebSocketConnection.png)
 
 ---
 
@@ -61,4 +64,26 @@ Enable Mosquitto at startup :
 ```bash
 sudo systemctl enable mosquitto
 sudo systemctl start mosquitto
+```
+
+Edit the config file on your server
+
+```bash
+sudo nano /etc/mosquitto/conf.d/default.conf
+```
+
+Edit the first lines
+
+```
+listener 1883
+allow_anonymous true // il faut parfois ajouter cette ligne
+listener 8000
+protocol websockets
+allow_anonymous true // il faut parfois ajouter cette ligne
+```
+
+Restart the service 
+
+```bash
+sudo systemctl restart mosquitto
 ```

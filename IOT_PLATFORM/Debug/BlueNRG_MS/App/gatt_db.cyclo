@@ -1,0 +1,6 @@
+../BlueNRG_MS/App/gatt_db.c:72:12:Add_HWServW2ST_Service	4
+../BlueNRG_MS/App/gatt_db.c:122:12:Add_SWServW2ST_Service	3
+../BlueNRG_MS/App/gatt_db.c:161:12:Acc_Update	2
+../BlueNRG_MS/App/gatt_db.c:195:12:Quat_Update	2
+../BlueNRG_MS/App/gatt_db.c:273:12:BlueMS_Environmental_Update	2
+../BlueNRG_MS/App/gatt_db.c:246:6:Read_Request_CB	5
