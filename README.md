@@ -1,4 +1,5 @@
-> 🇫🇷 Ce document est aussi disponible en français. [Lisez-le ici.](./docs/README/README.fr.md)
+> [!NOTE]
+> Ce document est aussi disponible en français. [Lisez-le ici.](./docs/frenchdoc/README.fr.md)
 
 This is a repository focused on school project for the ISMIN cursus of "Ecole des mines de Saint-Etienne" school on the design of an IOT platform.
 
@@ -46,7 +47,8 @@ The project relies on several interconnected **hardware / technology** component
 | **Sensor device (BLE)** | **X-NUCLEO-IDB05A1** | Handles BLE communication, transmitting sensor data from the NUCLEO MCU to the Raspberry Pi. |
 | **Sensor device (Sensors)** | **X-NUCLEO-IKS01A2** | Measures environmental parameters such as temperature, humidity, pressure, and sends them to the MCU. |
 
-> [!INFO] X stand for STM32
+> [!NOTE]
+> X stand for STM32
 
 The project relies on several interconnected **software** components:
 
