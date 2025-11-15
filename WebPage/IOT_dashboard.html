@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mosquitto Websockets - Interface complète</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Librairies -->
+  <script src="mqttws31.js"></script>
+  <script src="jquery.js"></script>
+  <link rel="stylesheet" href="jquery.jqplot.css" />
+  <script src="jquery.jqplot.js"></script>
+  <script src="jqplot.dateAxisRenderer.js"></script>
+<style>
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 0;
+        background-image: url("visite_privee_louvre.jpg"); /* mets ton image ici */
+        background-size: cover;       /* image couvre toute la page */
+        background-repeat: no-repeat; /* pas de répétition */
+        background-attachment: fixed; /* 🔥 image fixe au scroll */
+        background-position: center;
+        position: relative;
+    }
+    body::before {
+        content: "";
+        position: fixed;        /* reste fixe même au scroll */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.6); /* 0.6 = opacité */
+        pointer-events: none;   /* ne bloque pas les clics */
+        z-index: -1;            /* reste derrière le contenu */
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .charts-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .chart {
+      flex: 1;
+      height: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }  
+    .alerts-container {
+      margin: auto;
+      width: 40vw ;
+      display: flex;
+      flex-direction:column;
+      align-items: center;
+      justify-content:center;
+      gap: 20px;
+    }
+    .alertBox {
+      display: none;
+      padding: 15px;
+      text-align: center;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: white;
+    }
+    #alertTempBox {
+      background-color: #bf4d4d;
+    }
+    #alertHumBox {
+      background-color: #4da6ff;
+    }
+    #alertVolBox {
+      background-color: #ff4d4d;
+    }
+    #disableAlertBtn {
+      display: none;
+      margin: 15px auto;
+      padding: 10px 15px;
+      background-color: #222;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #disableAlertBtn:disabled {
+      background-color: #666;
+      cursor: not-allowed;
+    }
+
+    .form-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+   
+    input[type="text"] {
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 150px;
+      text-align: center;
+    }
+    button {
+      padding: 7px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #historyChart, #historyHumChart {
+      margin-bottom: 1rem;
+      width: 100%;
+      height: 400px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #showAlarms {
+      display: block;
+      margin: 20px auto;
+      text-align: center;
+    }
+  </style>
+
+ <script>
+    var mqtt;
+    var reconnectTimeout = 2000;
+
+    var tempData = [];
+    var humData = [];
+    var historyData = [];
+    var historyHumData = [];  // 🔹 nouveau : historique humidité
+
+    var plotTemp = null;
+    var plotHum = null;
+    var plotHistory = null;
+    var plotHistoryHum = null;
+
+    // usefull function
+
+    function showAlert(type, message) {
+        if (type === "temp") {
+            $("#alertTempBox").text(message).slideDown();
+        } 
+        else if (type === "hum") {
+            $("#alertHumBox").text(message).slideDown();
+        }
+        else if (type === "vol") {
+            $("#alertVolBox").text(message).slideDown();
+        }
+
+        $("#disableAlertBtn").fadeIn();
+    }
+
+
+	function requestAlarms() {
+        const type = $("#alarmTypeFilter").val();
+        const minValue = $("#alarmMinValue").val();
+        const date = $("#alarmDateFilter").val(); // format AAAA-MM-JJ
+
+        const payload = JSON.stringify({
+            type: type,                         // "temp", "hum", "vol", "all"
+            min: minValue ? parseFloat(minValue) : null,
+            date: date || null,                 // la date à filtrer (ou null)
+            limit: 10                           // nombre de résultats max
+        });
+
+        mqtt.send("Tristan/ALARME_HISTO_REQUEST", payload);
+	}
+
+    function displayAlarms(alarms) {
+        const container = $("#alarmList");
+        container.empty();
+
+        if (!alarms || alarms.length === 0) {
+            container.html("<p>Aucune alarme trouvée.</p>");
+            return;
+        }
+
+        alarms.forEach(a => {
+            let text = "";
+            if (a.temp !== undefined)
+            text = `🌡️ ${a.temp}°C — ${a.date} ${a.time}`;
+            else if (a.hum !== undefined)
+            text = `💧 ${a.hum}% — ${a.date} ${a.time}`;
+            else if (a.vol !== undefined)
+            text = `🛡️ Vol détecté — ${a.date} ${a.time}`;
+
+            container.append(`<div style="padding:5px 0;border-bottom:1px solid #ddd;">${text}</div>`);
+        });
+    }
+
+    function updateAlarmList(alarms) {
+        const alarmListDiv = document.getElementById('alarmList');
+        alarmListDiv.innerHTML = ''; // on vide avant de remplir
+
+        alarms.forEach(alarm => {
+        if(!alarm._id) return; // parfois il y a des objets vides
+        const div = document.createElement('div');
+        div.style.padding = '5px';
+        div.style.borderBottom = '1px solid #ccc';
+        div.innerHTML = `
+            <strong>Type:</strong> ${alarm.temp !== undefined ? 'Température' : 'Autre'}<br>
+            <strong>Valeur:</strong> ${alarm.temp !== undefined ? alarm.temp : ''}<br>
+            <strong>Date:</strong> ${alarm.date} ${alarm.time}
+        `;
+        alarmListDiv.appendChild(div);
+        });
+    }
+
+
+    function hideAllAlerts() {
+        $("#alertTempBox").slideUp();
+        $("#alertHumBox").slideUp();
+        $("#alertVolBox").slideUp();
+        $("#disableAlertBtn").fadeOut();
+    }
+
+
+    function MQTTconnect() {
+      mqtt = new Paho.MQTT.Client("localhost", 8000, "/mqtt", "web_" + parseInt(Math.random() * 100, 10));
+      mqtt.onConnectionLost = onConnectionLost;
+      mqtt.onMessageArrived = onMessageArrived;
+      mqtt.connect({
+        timeout: 3,
+        useSSL: false,
+        cleanSession: true,
+        onSuccess: onConnect,
+        onFailure: function (message) {
+          setTimeout(MQTTconnect, reconnectTimeout);
+        }
+      });
+    }
+
+    function onConnect() {
+      mqtt.subscribe("Tristan/ALARME_HISTO", { qos: 0 });
+      mqtt.subscribe("Tristan/TEMP", { qos: 0 });
+      mqtt.subscribe("Tristan/HUM", { qos: 0 });
+      mqtt.subscribe("Tristan/TEMP_Day", { qos: 0 });
+      mqtt.subscribe("Tristan/HUM_Day", { qos: 0 });
+      mqtt.subscribe("Tristan/ALERTE", { qos: 0 });
+    }
+
+    function onConnectionLost() {
+      setTimeout(MQTTconnect, reconnectTimeout);
+    }
+    function onMessageArrived(message) {
+        var topic = message.destinationName;
+        var payload = message.payloadString;
+        var time = new Date();
+
+        if (topic === "Tristan/TEMP") {
+            var temp = parseFloat(payload);
+            if (!isNaN(temp)) {
+                tempData.push([time, temp]);
+                if (tempData.length > 30) tempData.shift();
+                updatePlot("temp");
+            }
+        }
+        if (topic === "Tristan/HUM") {
+            var hum = parseFloat(payload);
+            if (!isNaN(hum)) {
+                umData.push([time, hum]);
+                if (humData.length > 30) humData.shift();
+                updatePlot("hum");
+            }
+        }
+        if (topic === "Tristan/TEMP_Day"){processHistory(payload, "temp");} 
+        if (topic === "Tristan/HUM_Day") {processHistory(payload, "hum"); }
+        if (topic === "Tristan/ALERTE") {
+            // Cas spécial OFF
+            if (payload.trim().toUpperCase() === "OFF") {
+                hideAllAlerts();
+                return;
+            }
+            try {
+                let alertData = JSON.parse(payload);
+                if (alertData.temp !== undefined) {
+                    showAlert("temp", `🔥 Température critique : ${alertData.temp}°C à ${alertData.time}`);
+                } 
+                else if (alertData.hum !== undefined) {
+                    showAlert("hum", `💧 Humidité critique : ${alertData.hum}% à ${alertData.time}`);
+                } 
+                else if (alertData.vol !== undefined) {
+                    // Nouvelle alerte vol
+                    showAlert("vol", `🛡️ Vol détecté !`);
+                }
+            } catch (e) {console.error("Erreur JSON alerte :", e);}
+        }
+
+        if(topic === 'Tristan/ALARME_HISTO') {
+            try {
+                const data = JSON.parse(payload);
+                displayAlarms(data);
+            } catch(e) {console.error('Erreur parsing MQTT message', e);}
+        }
+    }
+
+    function processHistory(payload, type) {
+        try {
+            var parsed = JSON.parse(payload);
+            var targetArray = (type === "temp") ? historyData : historyHumData;
+            targetArray.length = 0; // on vide avant
+
+            if (Array.isArray(parsed)) {
+                parsed.forEach(function(obj) {
+                    if (type === "temp") pushHistoryObject(obj);
+                    else pushHistoryHumObject(obj);
+                });
+            } else {
+                if (type === "temp") pushHistoryObject(parsed);
+                else pushHistoryHumObject(parsed);
+            }
+            targetArray.sort(function(a, b) { return a[0] - b[0]; });
+            if (targetArray.length === 0) {
+                if (type === "temp") {
+                    $("#historyChart").hide();
+                } else {
+                    $("#historyHumChart").hide();
+                }
+                $("#noDataMsg").fadeIn();
+                return;
+            } else {
+                $("#noDataMsg").hide();
+                if (type === "temp") $("#historyChart").show();
+                else $("#historyHumChart").show();
+            }
+            updatePlot(type === "temp" ? "history" : "historyHum");
+            console.log(`✅ Historique ${type} affiché avec`, targetArray.length, "points.");
+        } catch (e) {console.error(`❌ Erreur JSON pour Tristan/${type.toUpperCase()}_Day :`, payload, e);}
+    }
+    
+    function pushHistoryObject(obj) {
+        if (!obj || obj.temp === undefined || !obj.date || !obj.time) return;
+        var dateObj = parseDateTime(obj.date, obj.time);
+        if (!dateObj) return;
+        var val = Number(obj.temp);
+        if (isNaN(val)) return;
+        historyData.push([dateObj, val]);
+    }
+
+    // 🔹 Miroir pour l’humidité
+    function pushHistoryHumObject(obj) {
+        if (!obj || obj.hum === undefined || !obj.date || !obj.time) return;
+        var dateObj = parseDateTime(obj.date, obj.time);
+        if (!dateObj) return;
+        var val = Number(obj.hum);
+        if (isNaN(val)) return;
+        historyHumData.push([dateObj, val]);
+    }
+    function parseDateTime(dateStr, timeStr) {
+        var d = dateStr.split("/").map(Number);
+        var t = timeStr.split(":").map(Number);
+        if (d.length !== 3 || t.length < 2) return null;
+        return new Date(d[2], d[1]-1, d[0], t[0], t[1], t[2] || 0);
+    }
+    function updatePlot(type) {
+        if (type === "temp") {
+            if (plotTemp) plotTemp.destroy();
+            plotTemp = $.jqplot('chartTemp', [tempData], {
+                title: 'Température en temps réel (°C)',
+                series:[{showMarker:false}],
+                axes: {
+                    xaxis: {
+                    renderer: $.jqplot.DateAxisRenderer,
+                    tickOptions: { formatString: '%H:%M:%S' }
+                    },
+                    yaxis: { label: '°C' }
+                }
+            });
+        }
+        if (type === "hum") {
+                if (plotHum) plotHum.destroy();
+                plotHum = $.jqplot('chartHum', [humData], {
+                    title: 'Humidité en temps réel (%)',
+                    series:[{showMarker:false}],
+                    axes: {
+                        xaxis: {
+                        renderer: $.jqplot.DateAxisRenderer,
+                        tickOptions: { formatString: '%H:%M:%S' }
+                        },
+                        yaxis: { label: '%' }
+                    }
+                });
+        }
+        if (type === "history") {
+            if (plotHistory) plotHistory.destroy();
+            plotHistory = $.jqplot('historyChart', [historyData], {
+                title: 'Historique de température',
+                series:[{showMarker:false}],
+                axes: {
+                    xaxis: { renderer: $.jqplot.DateAxisRenderer, tickOptions: { formatString: '%H:%M' }},
+                    yaxis: { label: 'Température (°C)' }
+                }
+            });
+        }
+        if (type === "historyHum") {
+            if (plotHistoryHum) plotHistoryHum.destroy();
+            plotHistoryHum = $.jqplot('historyHumChart', [historyHumData], {
+                title: 'Historique de l’humidité',
+                series:[{showMarker:false}],
+                axes: {
+                    xaxis: { renderer: $.jqplot.DateAxisRenderer, tickOptions: { formatString: '%H:%M' }},
+                    yaxis: { label: 'Humidité (%)' }
+                }
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        MQTTconnect();
+        
+        $("#dateInput").on("input", function() {
+            $("#showHistory").prop("disabled", !this.value);
+        });
+
+        $("#showHistory").click(function() {
+            var date = $("#dateInput").val();
+            var type = $("#typeSelect").val();
+            if (!date) return;
+            historyData = []; // réinitialiser
+            var payload = JSON.stringify({ type: type, date: date });
+            mqtt.send("Tristan/REQUEST_HISTORY", payload);
+        });
+
+        $("#disableAlertBtn").click(function() {
+            mqtt.send("Tristan/ALERTE", "OFF");
+            $(this).prop("disabled", true);
+            setTimeout(() => $(this).prop("disabled", false), 2000);
+        });
+
+        $("#showAlarms").click(function() {
+            $("#alarmModal").fadeIn();
+            requestAlarms();
+        });
+
+        $("#closeAlarmModal").click(function() {
+            $("#alarmModal").fadeOut();
+        });
+
+        $("#applyAlarmFilter").click(function() {
+            requestAlarms();
+        });
+    });
+
+
+</script>
+</head>
+<body>
+    <h1>Panneau de contrôle Joconde</h1>
+    <!-- 🔸 Alertes -->
+    <div class="alerts-container">	
+        <div id="alertTempBox" class="alertBox"></div>
+        <div id="alertHumBox" class="alertBox"></div>
+        <div id="alertVolBox" class="alertBox"></div>
+        <button id="disableAlertBtn">Désactiver l’alerte</button>
+    </div>
+
+    <!-- 🔸 Historique Alertes -->
+    <button id="showAlarms">🚨 Voir les alarmes</button>
+    <div id="alarmModal" style="
+		display:none;
+		background:white;
+		padding:20px;
+		border-radius:10px;
+		width:400px;
+		margin:20px auto;
+		box-shadow:0 0 10px rgba(0,0,0,0.1);
+	">
+	    <div style="
+		    background:white;
+		    padding:20px;
+		    border-radius:10px;
+		    width:400px;
+		    max-height:80%;
+		    overflow:auto;
+		    ">
+		    <h2>🚨 Dernières alarmes</h2>
+		    <div>
+                <label>Type :</label>
+                <select id="alarmTypeFilter">
+                    <option value="all">Toutes</option>
+                    <option value="temp">Température</option>
+                    <option value="hum">Humidité</option>
+                    <option value="vol">Vol</option>
+                </select>
+                <label>Date :</label> 
+                <input type="date" id="alarmDateFilter">
+                <label>Valeur min :</label>
+                <input type="number" id="alarmMinValue" placeholder="ex: 27" style="width:70px;">
+                <button id="applyAlarmFilter">Filtrer</button>
+		    </div>
+		    <div id="alarmList" style="margin-top:15px;"></div>
+		    <button id="closeAlarmModal" style="margin-top:10px;">Fermer</button>
+		</div>
+	</div>
+
+    <!-- Graphiques temps réel -->
+    <h2 style="
+        width: 18vw;
+	    text-align:center;
+	    padding: 20px;
+	    background: #70552c;
+	    border-radius:10px;
+	    box-shadow:0 0 10px rgba(0,0,0,0.1);
+        margin: auto;
+        margin-bottom: 20px;
+        margin-top: 40px;
+	    color:#000000;
+	">Donnée en temps réel</h2>
+    <div class="charts-container">
+        <div id="chartTemp" class="chart"></div>
+        <div id="chartHum" class="chart"></div>
+    </div>
+
+    <!-- Formulaire d'historique -->
+    <div class="form-container">
+        <h2 style="
+            width: 20vw;
+            text-align:center;
+            padding: 20px;
+            background: #70552c;
+            border-radius:10px;
+            box-shadow:0 0 10px rgba(0,0,0,0.1);
+            margin: auto;
+            margin-top: 40px;
+            color:#000000;
+        ">Historique des données</h2>
+        <br>
+        <select id="typeSelect">
+            <option value="temp" selected>🌡️Température</option>
+            <option value="hum">💧 Humidité</option>
+        </select>
+        <input type="text" id="dateInput" placeholder="DD/MM/YYYY" />
+        <button id="showHistory" disabled>✨ Afficher historique</button>
+    </div>
+	
+    <!-- Graphique historique -->
+    <div id="historyChart"></div>
+    <div id="historyHumChart"></div>
+	<div id="noDataMsg" style="
+	    display:none;
+	    text-align:center;
+	    padding: 30px;
+	    background:white;
+	    border-radius:10px;
+	    box-shadow:0 0 10px rgba(0,0,0,0.1);
+	    font-size:1.2em;
+	    color:#555;
+	">
+	    📭 Aucune donnée disponible pour cette date.👀
+	</div>
+</body>
+</html>

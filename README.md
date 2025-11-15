@@ -1,4 +1,5 @@
-> 🇫🇷 Ce document est aussi disponible en français. [Lisez-le ici.](./docs/README/README.fr.md)
+> [!NOTE]
+> Ce document est aussi disponible en français. [Lisez-le ici.](./docs/frenchdoc/README.fr.md)
 
 This is a repository focused on school project for the ISMIN cursus of "Ecole des mines de Saint-Etienne" school on the design of an IOT platform.
 
@@ -46,7 +47,8 @@ The project relies on several interconnected **hardware / technology** component
 | **Sensor device (BLE)** | **X-NUCLEO-IDB05A1** | Handles BLE communication, transmitting sensor data from the NUCLEO MCU to the Raspberry Pi. |
 | **Sensor device (Sensors)** | **X-NUCLEO-IKS01A2** | Measures environmental parameters such as temperature, humidity, pressure, and sends them to the MCU. |
 
-> [!INFO] X stand for STM32
+> [!NOTE]
+> X stand for STM32
 
 The project relies on several interconnected **software** components:
 
@@ -54,8 +56,87 @@ The project relies on several interconnected **software** components:
 |----------|------------|------|
 | Dev Machine | STM32CubeIDE & soft pack| Developping Interface for C Code for STMicroelectronics MCU |
 | **Raspberry Pi** | **Node-RED** | Provides a visual interface for processing, transforming, and displaying data received from the Nucleo board or MQTT topics. |
-| **Raspberry Pi / Linux VM** | **Mosquitto (MQTT Broker)** | Acts as a gateway between the gateway and the server. MQTT messages are published on topics like `sensors/#`. |
+| **Raspberry Pi** | **Mosquitto Client** | Publishes and reads MQTT messages on topics such as `sensors/#`. |
+| **Linux VM** | **Mosquitto** | MQTT Broker that enables the sending and receiving of MQTT data between different clients. |
 | **Linux VM** | **MongoDB** | Database used to store the measurements and logs received from the MQTT broker. |
 | **Web** | **SendGrid** | Used to send automated email notifications based on sensor data or specific alert conditions. |
 
+# 🌍 Global System Overview
 
+# 💾 Repository Usage
+
+## 🔩 Connected Object
+
+You can take the STM32 project from the repository and modify any useful files as you wish in order to flash it onto the NUCLEO microcontroller.
+
+Project file organization in the STM32 project:  
+![MQTT](/docs/images/stm32projectArchitecture.png)
+
+Currently, the project allows:
+
+- Sending **temperature** data on the characteristic: `001c0000000111e1ac360002a5d5c51b`
+- Sending **humidity** data on the characteristic: `001c0000000111e1ac360002a5d5c51b`
+- Sending **acceleration** data on the characteristic: `00E00000000111e1ac360002a5d5c51b`
+- Sending **gyroscopic acceleration** data on the characteristic: `00E00000000111e1ac360002a5d5c51b`
+
+## 🌉 Gateway
+
+Install Node-RED:
+
+Install the required packages:
+
+Import the `flows.js` file into Node-RED.
+
+Configure the different nodes:
+
+## 🖥️ Server
+
+### 🍃 MongoDB
+
+> [!NOTE]  
+> To better understand MQTT communication and Mosquitto configuration, please refer to the associated document. [Read it here.](./docs/englishdoc/mqtt.en.md)
+
+Install MongoDB:  
+commands
+
+### 🧩 Mosquitto Installation
+
+> [!NOTE]  
+> To better understand MQTT communication and Mosquitto configuration, please refer to the associated document. [Read it here.](./docs/englishdoc/mqtt.en.md)
+
+```bash
+sudo apt update
+sudo apt install -y mosquitto mosquitto-clients
+```
+Enable and start Mosquitto:
+
+```bash
+sudo systemctl enable mosquitto
+sudo systemctl start mosquitto
+```
+
+Open the configuration file:
+
+```bash
+sudo nano /etc/mosquitto/conf.d/default.conf
+```
+Add the following lines at the top:
+
+```
+listener 1883
+allow_anonymous true  # you may need to add this line
+listener 8000
+protocol websockets
+allow_anonymous true  # you may need to add this line
+```
+
+Restart the service:
+
+```bash
+sudo systemctl restart mosquitto
+```
+
+🌐 Web Page
+
+You will find in the repository an example web page that was used for this project.
+You will also need to download the required JS files used by this web page.

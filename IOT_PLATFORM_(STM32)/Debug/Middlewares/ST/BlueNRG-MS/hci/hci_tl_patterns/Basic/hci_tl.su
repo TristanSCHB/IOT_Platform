@@ -1,0 +1,6 @@
+../Middlewares/ST/BlueNRG-MS/hci/hci_tl_patterns/Basic/hci_tl.c:97:13:move_list.constprop	16	static
+../Middlewares/ST/BlueNRG-MS/hci/hci_tl_patterns/Basic/hci_tl.c:126:6:hci_init	16	static
+../Middlewares/ST/BlueNRG-MS/hci/hci_tl_patterns/Basic/hci_tl.c:153:6:hci_register_io_bus	0	static
+../Middlewares/ST/BlueNRG-MS/hci/hci_tl_patterns/Basic/hci_tl.c:163:5:hci_send_req	176	static
+../Middlewares/ST/BlueNRG-MS/hci/hci_tl_patterns/Basic/hci_tl.c:303:6:hci_user_evt_proc	16	static
+../Middlewares/ST/BlueNRG-MS/hci/hci_tl_patterns/Basic/hci_tl.c:321:9:hci_notify_asynch_evt	16	static
