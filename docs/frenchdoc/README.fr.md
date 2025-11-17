@@ -66,12 +66,16 @@ Le projet s’appuie sur plusieurs briques logicielles interconnectées :
 
 ## 🔩 L'Objets connecté
 
-Vous pouvez prendre le projet STM32 du repo et modifier selon vos envie les différents fichiers utiles afin de le flasher sur le microcontrolleur de la NUCLEO.
+> [!NOTE]
+> Pour mieux comprendre le rôle des fichiers référez vous au document associé. [Lisez-le ici.](./stm32ProjectArchitecture.fr.md)
+
+Vous pouvez cloner le projet en télechargeant le dossier IOT_PLATFORM et en l'imporant sur STM32CubeCUBEIDE. Il vous suffira de flasher le code sur la NUCLEO.
 
 Schéma de l'organsiation des fichiers dans le projet STM32 : 
 <p align="center">
   <img src="/docs/images/stm32projectArchitecture.png" alt="Diagramme STM32" width="700" />
 </p>
+
 Actuellement le projet permet :
 
 - L'envoie de la température sur la charactértisique : 001c0000000111e1ac360002a5d5c51b

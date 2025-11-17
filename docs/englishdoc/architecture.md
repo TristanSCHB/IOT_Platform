@@ -1,15 +1,28 @@
-# Network Architecture
+# 🌐 Network Architecture
 
-We had to use the material given by our school, so 
- - RaspberyPi model 3
- - STM32 Sensor device
+We had to use the equipment provided by our school:
 
-For using the rasp as a gateway we had to configure it by SSH. 
+- A Raspberry Pi 3
+- An STM32 sensor device
 
-But the rasp IP was set by the school teacher and for not destroy the current system which work we didn't change the IP config file. Then we had to connect the PI and our machine at the school network where the Raspberry would have an IP.
+To use the Raspberry Pi as a gateway, we needed to configure it via SSH.
+
+However, the Raspberry Pi’s IP address had already been set by our instructor. To avoid breaking the existing system, which was already functioning, we chose not to modify the network configuration file.
+
+As a result, we had to connect both the Raspberry Pi and our computer to the school network, where the Pi would automatically receive the correct IP address.
 
 <p align="center">
   <img src="/docs/images/networkArchitecture.png" alt="Diagramme network" width="600" />
 </p> 
 
-# System Architecture
+# 💻System Architecture
+
+<p align="center">
+  <img src="/docs/images/systemArchitecture.png" alt="Diagramme architecture" width="700" />
+</p>
+
+# 📫 Topic Architecture
+
+<p align="center">
+  <img src="/docs/images/topicArchitecture.png" alt="Diagramme network" width="600" />
+</p> 

@@ -1,9 +1,9 @@
-> [!NOTE]
-> Ce document est aussi disponible en français. [Lisez-le ici.](./docs/frenchdoc/README.fr.md)
+> [!IMPORTANT]
+> This document is available in French. [Lisez-le ici.](./docs/frenchdoc/README.fr.md)
 
 This is a repository focused on school project for the ISMIN cursus of "Ecole des mines de Saint-Etienne" school on the design of an IOT platform.
 
-Main contributors : Tristan SCHREIBER & Adrien DELMAS
+**Main contributors : Tristan SCHREIBER & Adrien DELMAS**
 
 # ❓ About projet
 
@@ -97,7 +97,7 @@ Configure the different nodes:
 ### 🍃 MongoDB
 
 > [!NOTE]  
-> To better understand MQTT communication and Mosquitto configuration, please refer to the associated document. [Read it here.](./docs/englishdoc/mongodb.md)
+> To better understand Mongo Services, please refer to the associated document. [Read it here.](./docs/englishdoc/mongodb.md)
 
 > [!IMPORTANT]  
 > After thinking about it, a better option for you could be downloading docker an create a mongob container.

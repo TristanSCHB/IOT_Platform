@@ -20,6 +20,13 @@ Exemple :
   "time": "14:32:10"
 }
 ```
+
+Il y a 2 service MongoDB à connaître
+
+- Mongod -> C'est le service qui permet d'ouvrir un serveur mongoDB
+- Mongo -> Client CLI permettant de piloter nos base de donnée.
+
+
 ## ⚙️ Installation de MongoDB
 
 🧩 Selon la version d’Ubuntu utilisée (ex. 16.04), certaines versions récentes de MongoDB peuvent ne pas être compatibles.
