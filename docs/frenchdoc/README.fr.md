@@ -27,12 +27,14 @@ Le contexte de ce projet est de protéger le célèbre tableau de Léonard de Vi
 
 # 🌍 Vu Systeme Globale
 
+> [!NOTE]  
+> Pour savoir comment nous avons créer le réseau, gérer le system de développement et la communication référer vous au document d'**architecture** associé. [Lisez-le ici.](./architecture.fr.md)
+
 <p align="center">
   <img src="/docs/images/systemArchitecture.png" alt="Diagramme architecture" width="700" />
 </p>
 
-> [!NOTE]  
-> Pour savoir comment nous avons créer le réseau et gérer le system de développement référer vous au document associé. [Lisez-le ici.](./docs/englishdoc/architecture.fr.md)
+
 
 
 ## ⚙️ Stack technique

@@ -32,12 +32,14 @@ The story behind this project is to protect Leonardo da Vinci's famous painting,
 
 # 🌍 Global System Overview
 
+> [!NOTE]  
+> To know how we manage the network, developpment and communication, check the associated **architecture** document. [Read it here.](./docs/englishdoc/architecture.md)
+
 <p align="center">
   <img src="/docs/images/systemArchitecture.png" alt="Diagramme architecture" width="700" />
 </p>
 
-> [!NOTE]  
-> To know how we manage the network and dev organisation check the associated document. [Read it here.](./docs/englishdoc/architecture.md)
+
 
 ## ⚙️ Technical Stack
 
