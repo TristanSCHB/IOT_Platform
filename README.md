@@ -136,7 +136,12 @@ Restart the service:
 sudo systemctl restart mosquitto
 ```
 
-🌐 Web Page
+### 🌐 Web Page
 
 You will find in the repository an example web page that was used for this project.
-You will also need to download the required JS files used by this web page.
+
+You will also need to download the JavaScript files required by this interface.
+
+The page displays real-time temperature and humidity data, along with two sections dedicated to viewing historical data for specific days. The interface also lists all recently triggered alarms and allows the conservator to reset them.
+A password is required for this action. By default, the password is joconde123.
+For security reasons, the system now verifies the SHA-256 hash of the password entered by the user and authorizes the reset only if the hash matches the stored value.

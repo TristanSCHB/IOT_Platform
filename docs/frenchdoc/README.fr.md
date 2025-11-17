@@ -202,8 +202,13 @@ db.createCollection("Hum")
 db.createCollection("Alarme")
 ```
 
-### Page web
+### 🌐 Page web
 
-Vous disposez dans le repo d'une page web exemple qui m'a servie pour ce projet. Vous devrez télécharger aussi les fichiers js utilisés par la page web.
+Vous trouverez dans le dépôt un exemple de page web utilisée pour ce projet.
 
+Vous devrez également télécharger les fichiers JavaScript nécessaires à son fonctionnement.
 
+La page affiche en temps réel les données de température et d’humidité, ainsi que deux sections permettant de consulter l’historique pour des journées spécifiques. L’interface présente aussi les alarmes récemment déclenchées et offre la possibilité pour le conservateur de les réinitialiser.
+
+Pour effectuer cette réinitialisation, un mot de passe est requis. Par défaut, il s’agit de joconde123.
+Par mesure de sécurité, le système vérifie désormais le hash SHA-256 du mot de passe saisi par l’utilisateur et n’autorise la réinitialisation que si ce hash correspond à la valeur enregistrée.
