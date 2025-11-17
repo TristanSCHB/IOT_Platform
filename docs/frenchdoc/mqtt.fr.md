@@ -27,6 +27,11 @@ Aucune connexion directe entre publisher et subscriber :
 
 Exemple : Client Node-RED → TCP 1883 → Broker Mosquitto
 
+<p align="center">
+  <img src="/docs/images/onlyMqttConnection.png" alt="Diagramme MQTT" width="600" />
+</p>
+
+
 ### 🌐 Port 8000 → MQTT via WebSocket
 
 - Protocole : **WebSocket (HTTP)**
@@ -34,6 +39,12 @@ Exemple : Client Node-RED → TCP 1883 → Broker Mosquitto
 - Nécessite d’activer le protocole `websockets` dans la configuration Mosquitto
 
 Exemple : Page web (JS) → WebSocket 8000 → Broker Mosquitto
+
+<p align="center">
+  <img src="/docs/images/mqttAnsWebSocketConnection.png" alt="Diagramme MQTT" width="600" />
+</p>
+
+---
 
 ### 🔁 QoS (Quality of Service)
 

@@ -30,9 +30,11 @@ The story behind this project is to protect Leonardo da Vinci's famous painting,
 | **Global** | Historical log | All alarms events must be logged in a database with filtering options accessible to the conservator. |
 |  | Interface quality | |
 
+# 🌍 Global System Overview
 
-
- 
+<p align="center">
+  <img src="/docs/images/systemArchitecture.png" alt="Diagramme architecture" width="600" />
+</p>
 
 ## ⚙️ Technical Stack
 
@@ -61,9 +63,7 @@ The project relies on several interconnected **software** components:
 | **Linux VM** | **MongoDB** | Database used to store the measurements and logs received from the MQTT broker. |
 | **Web** | **SendGrid** | Used to send automated email notifications based on sensor data or specific alert conditions. |
 
-# 🌍 Global System Overview
-
-# 💾 Repository Usage
+# 💾 How to make it ?
 
 ## 🔩 Connected Object
 
@@ -94,15 +94,87 @@ Configure the different nodes:
 ### 🍃 MongoDB
 
 > [!NOTE]  
-> To better understand MQTT communication and Mosquitto configuration, please refer to the associated document. [Read it here.](./docs/englishdoc/mqtt.en.md)
+> To better understand MQTT communication and Mosquitto configuration, please refer to the associated document. [Read it here.](./docs/englishdoc/mongodb.md)
 
-Install MongoDB:  
-commands
+> [!IMPORTANT]  
+> After thinking about it, a better option for you could be downloading docker an create a mongob container.
+
+### 🔹 Download
+
+Go to the official website to download a compatible version:
+👉 [MongoDB Community Edition Archive](https://www.mongodb.com/try/download/community-edition/releases/archive)
+
+Download the package that matches your distribution:
+
+- .deb for Debian/Ubuntu
+
+- .rpm for RedHat/CentOS
+
+### 🔹 Installation
+🐧 On Debian/Ubuntu :
+```bash
+sudo apt install [nom-du-fichier].deb
+```
+🐧 Sur RedHat/CentOS :
+```bash
+sudo dnf install [nom-du-fichier].rpm
+```
+### 🔹 Starting the service
+
+Start MongoDB using systemctl:
+```bash
+sudo systemctl start mongod
+```
+
+Enable automatic startup at boot:
+```bash
+sudo systemctl enable mongod
+```
+
+## ⚙️ Network configuration
+
+The configuration file is located here:
+
+```bash
+sudo nano /etc/mongod.conf
+```
+Modify the line:
+
+bindIp: 127.0.0.1
+
+> [!IMPORTANT]  
+> Replace it with the IP address of your server, for me it's my VM's IP (obtained with ```ifconfig```).
+
+Restart MongoDB to apply the changes:
+
+```bash
+sudo systemctl restart mongod
+```
+
+## 🧰 Creating the database and collections
+
+Open the MongoDB shell:
+```bash
+mongo --host [IP_VM] --port 27017
+```
+
+Create a database:
+```bash
+use IOT
+```
+
+Create collections:
+
+```bash
+db.createCollection("Temp")
+db.createCollection("Hum")
+db.createCollection("Alarme")
+```
 
 ### 🧩 Mosquitto Installation
 
 > [!NOTE]  
-> To better understand MQTT communication and Mosquitto configuration, please refer to the associated document. [Read it here.](./docs/englishdoc/mqtt.en.md)
+> To better understand MQTT communication and Mosquitto configuration, please refer to the associated document. [Read it here.](./docs/englishdoc/mqtt.md)
 
 ```bash
 sudo apt update

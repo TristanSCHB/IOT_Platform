@@ -90,7 +90,7 @@ Configurer les différents noeud :
 ### 🧩 Installation mosquitto
 
 > [!NOTE]
-> Pour mieux comprendre la communication mqtt et la configuration mosquitto référer vous au document associé.. [Lisez-le ici.](./docs/frenchdoc/mqtt.fr.md)
+> Pour mieux comprendre la communication mqtt et la configuration mosquitto référer vous au document associé.. [Lisez-le ici.](./mqtt.fr.md)
 
 ```bash
 sudo apt update
@@ -129,7 +129,7 @@ sudo systemctl restart mosquitto
 ### 🍃 MongoDB
 
 > [!NOTE]
-> Pour mieux comprendre le rôle et comment utiliser la base de donnée référez vous au document associé. [Lisez-le ici.](/docs/frenchdoc/mongodb.fr.md)
+> Pour mieux comprendre le rôle et comment utiliser la base de donnée référez vous au document associé. [Lisez-le ici.](./mongodb.fr.md)
 
 ### 🔹 Téléchargement
 
@@ -174,7 +174,8 @@ Modifiez la ligne :
 
 bindIp: 127.0.0.1
 
-➡️ pour la remplacer par l’adresse IP de votre VM (obtenue via ifconfig).
+> [!IMPORTANT]  
+> remplacer par l’adresse IP de votre VM ou de votre serveur (obtenue via ifconfig).
 
 Redémarrez MongoDB pour appliquer les changements :
 
