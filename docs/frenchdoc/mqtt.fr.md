@@ -44,6 +44,9 @@ Exemple : Page web (JS) → WebSocket 8000 → Broker Mosquitto
   <img src="/docs/images/mqttAnsWebSocketConnection.png" alt="Diagramme MQTT" width="600" />
 </p>
 
+> [!NOTE]  
+> Ceci explique pourquoi nous configurons  ```/etc/mosquitto/conf.d/default.conf``` comme ça.
+
 ---
 
 ### 🔁 QoS (Quality of Service)
@@ -56,8 +59,6 @@ Exemple : Page web (JS) → WebSocket 8000 → Broker Mosquitto
 
 # ⚙️ Installation et configuration de Mosquitto
 
-## 🧩 Installation sur Raspberry Pi / Linux (Debian, Ubuntu)
-
 ```bash
 sudo apt update
 sudo apt install -y mosquitto mosquitto-clients
@@ -68,4 +69,26 @@ Activer Mosquitto au démarrage :
 ```bash
 sudo systemctl enable mosquitto
 sudo systemctl start mosquitto
+```
+
+Modifier le fichier de configuration :
+
+```bash
+sudo nano /etc/mosquitto/conf.d/default.conf
+```
+
+Modifier les premières lignes par : 
+
+```
+listener 1883
+allow_anonymous true // il faut parfois ajouter cette ligne
+listener 8000
+protocol websockets
+allow_anonymous true // il faut parfois ajouter cette ligne
+```
+
+Rédemarrer le service pour prendre en compte ces modifications :
+
+```bash
+sudo systemctl restart mosquitto
 ```

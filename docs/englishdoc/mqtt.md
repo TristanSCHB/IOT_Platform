@@ -27,7 +27,9 @@ There is no direct connection between publisher and subscriber:
 
 Example: Node-RED client → TCP 1883 → Mosquitto Broker
 
-![MQTT](docs/images/onlyMqttConnection.png)
+<p align="center">
+  <img src="/docs/images/onlyMqttConnection.png" alt="Diagramme MQTT" width="600" />
+</p>
 
 ### 🌐 Port 8000 → MQTT via WebSocket
 
@@ -36,7 +38,13 @@ Example: Node-RED client → TCP 1883 → Mosquitto Broker
 - Requires enabling `websockets` in the Mosquitto configuration
 
 Example: Web page (JS) → WebSocket 8000 → Mosquitto Broker
-![MQTT](docs/images/mqttAnsWebSocketConnection.png)
+
+<p align="center">
+  <img src="/docs/images/mqttAnsWebSocketConnection.png" alt="Diagramme MQTT" width="600" />
+</p>
+
+> [!NOTE]  
+> Those things explains why we configure ```/etc/mosquitto/conf.d/default.conf``` like that.
 
 ---
 
@@ -51,8 +59,6 @@ Example: Web page (JS) → WebSocket 8000 → Mosquitto Broker
 ---
 
 # ⚙️ Mosquitto Installation and Configuration
-
-## 🧩 Installation on Raspberry Pi / Linux (Debian, Ubuntu)
 
 ```bash
 sudo apt update

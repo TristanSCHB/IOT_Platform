@@ -33,10 +33,16 @@ The story behind this project is to protect Leonardo da Vinci's famous painting,
 # 🌍 Global System Overview
 
 <p align="center">
-  <img src="/docs/images/systemArchitecture.png" alt="Diagramme architecture" width="600" />
+  <img src="/docs/images/systemArchitecture.png" alt="Diagramme architecture" width="700" />
 </p>
 
+> [!NOTE]  
+> To know how we manage the network and dev organisation check the associated document. [Read it here.](./docs/englishdoc/architecture.md)
+
 ## ⚙️ Technical Stack
+
+> [!NOTE]
+> X stand for STM32
 
 The project relies on several interconnected **hardware / technology** components:
 
@@ -48,9 +54,6 @@ The project relies on several interconnected **hardware / technology** component
 | **Sensor device (CPU)** | **X-NUCLEO-L053R8** | MCU responsible for reading sensor data and sending it via BLE. |
 | **Sensor device (BLE)** | **X-NUCLEO-IDB05A1** | Handles BLE communication, transmitting sensor data from the NUCLEO MCU to the Raspberry Pi. |
 | **Sensor device (Sensors)** | **X-NUCLEO-IKS01A2** | Measures environmental parameters such as temperature, humidity, pressure, and sends them to the MCU. |
-
-> [!NOTE]
-> X stand for STM32
 
 The project relies on several interconnected **software** components:
 

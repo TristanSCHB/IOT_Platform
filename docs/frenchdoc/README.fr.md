@@ -25,8 +25,20 @@ Le contexte de ce projet est de protéger le célèbre tableau de Léonard de Vi
 | **Global** | Historique | Tous les événements d’alarme doivent être enregistrés dans une base de données avec des options de filtrage accessibles au conservateur. |
 |  | Qualité de l’interface | |
 
+# 🌍 Vu Systeme Globale
+
+<p align="center">
+  <img src="/docs/images/systemArchitecture.png" alt="Diagramme architecture" width="700" />
+</p>
+
+> [!NOTE]  
+> Pour savoir comment nous avons créer le réseau et gérer le system de développement référer vous au document associé. [Lisez-le ici.](./docs/englishdoc/architecture.fr.md)
+
 
 ## ⚙️ Stack technique
+
+> [!NOTE]
+> X pour STM32
 
 Le projet s’appuie sur plusieurs composants **matériels / technologiques** interconnectés :
 
@@ -39,9 +51,6 @@ Le projet s’appuie sur plusieurs composants **matériels / technologiques** in
 | **Capteur (BLE)** | **X-NUCLEO-IDB05A1** | Gère la communication BLE, transmet les données du NUCLEO vers la Raspberry Pi. |
 | **Capteur (capteurs)** | **X-NUCLEO-IKS01A2** | Mesure les paramètres environnementaux tels que la température, l’humidité et la pression, et les transmet au MCU. |
 
-> [!NOTE]
-> X pour STM32
-
 Le projet s’appuie sur plusieurs briques logicielles interconnectées :
 
 | Hébergement | Composant | Rôle |
@@ -53,12 +62,6 @@ Le projet s’appuie sur plusieurs briques logicielles interconnectées :
 | **VM Linux** | **MongoDB** | Base de données utilisée pour stocker les mesures et les journaux reçus du broker MQTT. |
 | Web | SendGrid | Utilisé pour envoyer des notifications par e-mail automatisées en fonction des données ou d’alertes spécifiques. |
 
-
-
-# 🌍 Vu Systeme Globale
-
-
-
 # 💾 Utilisation du repo
 
 ## 🔩 L'Objets connecté
@@ -66,8 +69,9 @@ Le projet s’appuie sur plusieurs briques logicielles interconnectées :
 Vous pouvez prendre le projet STM32 du repo et modifier selon vos envie les différents fichiers utiles afin de le flasher sur le microcontrolleur de la NUCLEO.
 
 Schéma de l'organsiation des fichiers dans le projet STM32 : 
-![MQTT](/docs/images/stm32projectArchitecture.png)
-
+<p align="center">
+  <img src="/docs/images/stm32projectArchitecture.png" alt="Diagramme STM32" width="700" />
+</p>
 Actuellement le projet permet :
 
 - L'envoie de la température sur la charactértisique : 001c0000000111e1ac360002a5d5c51b
@@ -90,7 +94,7 @@ Configurer les différents noeud :
 ### 🧩 Installation mosquitto
 
 > [!NOTE]
-> Pour mieux comprendre la communication mqtt et la configuration mosquitto référer vous au document associé.. [Lisez-le ici.](./mqtt.fr.md)
+> Pour mieux comprendre la communication mqtt et la configuration mosquitto référer vous au document associé. [Lisez-le ici.](./mqtt.fr.md)
 
 ```bash
 sudo apt update
