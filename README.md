@@ -70,10 +70,16 @@ The project relies on several interconnected **software** components:
 
 ## 🔩 Connected Object
 
-You can take the STM32 project from the repository and modify any useful files as you wish in order to flash it onto the NUCLEO microcontroller.
+> [!NOTE]
+> To better understand the role of the files, refer to the associated document. [Read-it here.](./stm32ProjectArchitecture.fr.md)
 
-Project file organization in the STM32 project:  
-![MQTT](/docs/images/stm32projectArchitecture.png)
+You can clone the project by downloading the IOT_PLATFORM folder and importing it into STM32CubeIDE. You will then just need to flash the code onto the NUCLEO board.
+
+Diagram of the file organization in the STM32 project:
+<p align="center">
+  <img src="/docs/images/stm32projectArchitecture.png" alt="Diagramme STM32" width="700" />
+</p>
+
 
 Currently, the project allows:
 
