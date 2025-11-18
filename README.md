@@ -73,7 +73,7 @@ The project relies on several interconnected **software** components:
 ## 🔩 Connected Object
 
 > [!NOTE]
-> To better understand the role of the files, refer to the associated document. [Read-it here.](./stm32ProjectArchitecture.fr.md)
+> To better understand the role of the files, refer to the associated document. [Read-it here.](./stm32ProjectArchitecture.md)
 
 You can clone the project by downloading the IOT_PLATFORM folder and importing it into STM32CubeIDE. You will then just need to flash the code onto the NUCLEO board.
 
@@ -225,6 +225,24 @@ You will find in the repository an example web page that was used for this proje
 
 You will also need to download the JavaScript files required by this interface.
 
-The page displays real-time temperature and humidity data, along with two sections dedicated to viewing historical data for specific days. The interface also lists all recently triggered alarms and allows the conservator to reset them.
-A password is required for this action. By default, the password is joconde123.
-For security reasons, the system now verifies the SHA-256 hash of the password entered by the user and authorizes the reset only if the hash matches the stored value.
+The page displays :
+- **Real-time data** (temperature and humidity).
+- Two sections dedicated to viewing **historical data** for specific day.
+- The interface also lists all **recently triggered alarms** and allows the conservator to reset them.
+- One modal box to see the **historic of triggered alarms**.
+  
+> [!IMPORTANT]
+> **A password is required** for reset alarms. By default, **the password is joconde123**.
+> For security reasons, the system now verifies the SHA-256 hash of the password entered by the user.
+
+#### 🖼️ Dashboard : 
+<p align="center">
+  <img src="/docs/images/dashboardView.png" alt="Dashboard" width="700" />
+</p>
+
+Only in french sry ...
+
+<p align="center">
+  <img src="/docs/images/dashboardView2.png" alt="Dashboard" width="700" />
+</p>
+
